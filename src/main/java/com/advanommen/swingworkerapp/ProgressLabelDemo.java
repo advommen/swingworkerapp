@@ -1,3 +1,4 @@
+package com.advanommen.swingworkerapp;
 
 /**
  * Copyright (c) 1995 - 2008 Sun Microsystems, Inc.  All rights reserved.
@@ -49,8 +50,8 @@ import javax.swing.SwingWorker;
 public class ProgressLabelDemo extends JPanel implements ActionListener,
         PropertyChangeListener {
 
-    private JLabel progressLabel;
-    private JButton startButton;
+    private final JLabel progressLabel;
+    private final JButton startButton;
     private Task task;
 
     class Task extends SwingWorker<Void, Void> {
