@@ -32,30 +32,25 @@
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
-public class ProgressBarDemo extends JPanel implements ActionListener,
+public class ProgressLabelDemo extends JPanel implements ActionListener,
         PropertyChangeListener {
 
-    private JProgressBar progressBar;
+    private JLabel progressLabel;
     private JButton startButton;
-    private JTextArea taskOutput;
     private Task task;
 
     class Task extends SwingWorker<Void, Void> {
@@ -65,19 +60,9 @@ public class ProgressBarDemo extends JPanel implements ActionListener,
          */
         @Override
         public Void doInBackground() {
-            Random random = new Random();
-            int progress = 0;
-            // Initialize progress property.
-            setProgress(0);
-            while (progress < 100) {
-                // Sleep for up to one second.
-                try {
-                    Thread.sleep(random.nextInt(1000));
-                } catch (InterruptedException ignore) {
-                }
-                // Make random progress.
-                progress += random.nextInt(10);
-                setProgress(Math.min(progress, 100));
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ignore) {
             }
             return null;
         }
@@ -90,11 +75,10 @@ public class ProgressBarDemo extends JPanel implements ActionListener,
             Toolkit.getDefaultToolkit().beep();
             startButton.setEnabled(true);
             setCursor(null); // turn off the wait cursor
-            taskOutput.append("Done!\n");
         }
     }
 
-    public ProgressBarDemo() {
+    public ProgressLabelDemo() {
         super(new BorderLayout());
 
         // Create the demo's UI.
@@ -102,20 +86,13 @@ public class ProgressBarDemo extends JPanel implements ActionListener,
         startButton.setActionCommand("start");
         startButton.addActionListener(this);
 
-        progressBar = new JProgressBar(0, 100);
-        progressBar.setValue(0);
-        progressBar.setStringPainted(true);
-
-        taskOutput = new JTextArea(5, 20);
-        taskOutput.setMargin(new Insets(5, 5, 5, 5));
-        taskOutput.setEditable(false);
+        progressLabel = new JLabel("INITIAL STATE");
 
         JPanel panel = new JPanel();
         panel.add(startButton);
-        panel.add(progressBar);
+        panel.add(progressLabel);
 
         add(panel, BorderLayout.PAGE_START);
-        add(new JScrollPane(taskOutput), BorderLayout.CENTER);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
     }
@@ -141,11 +118,8 @@ public class ProgressBarDemo extends JPanel implements ActionListener,
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("progress".equals(evt.getPropertyName())) {
-            int progress = (Integer) evt.getNewValue();
-            progressBar.setValue(progress);
-            taskOutput.append(String.format("Completed %d%% of task.\n", task
-                    .getProgress()));
+        if ("state".equals(evt.getPropertyName())) {
+            progressLabel.setText(evt.getNewValue().toString());
         }
     }
 
@@ -155,11 +129,11 @@ public class ProgressBarDemo extends JPanel implements ActionListener,
      */
     private static void createAndShowGUI() {
         // Create and set up the window.
-        JFrame frame = new JFrame("ProgressBarDemo");
+        JFrame frame = new JFrame("ProgressDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and set up the content pane.
-        JComponent newContentPane = new ProgressBarDemo();
+        JComponent newContentPane = new ProgressLabelDemo();
         newContentPane.setOpaque(true); // content panes must be opaque
         frame.setContentPane(newContentPane);
 
